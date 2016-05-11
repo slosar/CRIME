@@ -3,13 +3,13 @@
 ###Compiler and compilation options
 COMP_SER = gcc
 COMP_MPI = mpicc
-OPTIONS = -Wall -O3
+OPTIONS = -Wall -O3 -g
 #
 ### Behavioural flags
 #Use double precision integer (enable in general)
 DEFINEFLAGS += -D_LONGIDS
 #Use custom-made frequency table
-DEFINEFLAGS += -D_IRREGULAR_NUTABLE
+#DEFINEFLAGS += -D_IRREGULAR_NUTABLE
 #Generate debug help. Only useful for development
 DEFINEFLAGS += -D_DEBUG
 #Use double precision floating point? Set to "yes" or "no"
@@ -17,7 +17,7 @@ USE_SINGLE_PRECISION = yes
 #Use OMP parallelization? Set to "yes" or "no"
 USE_OMP = yes
 #Use MPI parallelization? Set to "yes" or "no"
-USE_MPI = yes
+USE_MPI = no
 #
 ###Path to libraries and headers
 ###If two or more of the dependencies reside in the same paths, only
@@ -29,8 +29,8 @@ GSL_LIB = -L/home/dmonge/lib
 FFTW_INC = 
 FFTW_LIB = 
 #HEALPix
-HPIX_INC = 
-HPIX_LIB = 
+HPIX_INC = -I/home/anze/src/Healpix_3.20/include/ -I/home/anze/src/Healpix_3.20/src/cxx/basic_gcc/include
+HPIX_LIB = -L/home/anze/src/Healpix_3.20/lib -lchealpix -L/home/anze/src/Healpix_3.20/src/cxx/basic_gcc/lib
 #LIBSHARP
 LSHT_INC = -I/home/dmonge/Software/libsharp/auto/include
 LSHT_LIB = -L/home/dmonge/Software/libsharp/auto/lib
@@ -40,8 +40,8 @@ FITS_LIB =
 #
 ########## End of user-definable ##########
 
-OPTIONS += -fopenmp
 ifeq ($(strip $(USE_OMP)),yes)
+OPTIONS += -fopenmp
 DEFINEFLAGS += -D_HAVE_OMP
 endif #OMP
 
