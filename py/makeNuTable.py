@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import numpy as np
-for line in open('param_GetHI.ini').readlines():
+for line in open('ini/param_GetHI.ini').readlines():
     try:
         key,val=line.split()
     except:
