@@ -14,23 +14,32 @@ DEFINEFLAGS += -D_LONGIDS
 DEFINEFLAGS += -D_DEBUG
 #Use double precision floating point? Set to "yes" or "no"
 USE_SINGLE_PRECISION = yes
-#Use OMP parallelization? Set to "yes" or "no"
+
+ifeq ($(NERSC_HOST),cori)
 USE_OMP = yes
-#Use MPI parallelization? Set to "yes" or "no"
 USE_MPI = no
+COMP_MPI=CC
+OPTIONS = -Wall -O3 -fpermissive -Wno-write-strings
+else
+USE_OMP = yes
+USE_MPI = no
+endif
+
+
+
 #
 ###Path to libraries and headers
 ###If two or more of the dependencies reside in the same paths, only
 ###one instance is necessary.
 #GSL
-GSL_INC = -I/home/dmonge/include
-GSL_LIB = -L/home/dmonge/lib
+GSL_INC = $(GSL)
+GSL_LIB = $(GSL)
 #FFTW
 FFTW_INC = 
-FFTW_LIB = 
+FFTW_LIB = -L$(FFTW_DIR)
 #HEALPix
-HPIX_INC = -I/home/anze/src/Healpix_3.20/include/ -I/home/anze/src/Healpix_3.20/src/cxx/basic_gcc/include
-HPIX_LIB = -L/home/anze/src/Healpix_3.20/lib -lchealpix -L/home/anze/src/Healpix_3.20/src/cxx/basic_gcc/lib
+HPIX_INC = -I/home/anze/src/Healpix_3.20/include/ -I/home/anze/src/Healpix_3.20/src/cxx/basic_gcc/include $(HEALPIXINCLUDE)
+HPIX_LIB = -L/home/anze/src/Healpix_3.20/lib -lchealpix -L/home/anze/src/Healpix_3.20/src/cxx/basic_gcc/lib $(HEALPIXLIB)
 #LIBSHARP
 LSHT_INC = -I/home/dmonge/Software/libsharp/auto/include
 LSHT_LIB = -L/home/dmonge/Software/libsharp/auto/lib
@@ -56,7 +65,7 @@ ifeq ($(strip $(USE_SINGLE_PRECISION)),yes)
 DEFINEFLAGS += -D_SPREC
 
 ifeq ($(strip $(USE_OMP)),yes)
-LIB_FFTW += -lfftw3f_omp
+LIB_FFTW += -lfftw3f_threads
 endif #OMP
 ifeq ($(strip $(USE_MPI)),yes)
 LIB_FFTW += -lfftw3f_mpi
@@ -66,7 +75,7 @@ LIB_FFTW += -lfftw3f
 else #SINGLE_PRECISION
 
 ifeq ($(strip $(USE_OMP)),yes)
-LIB_FFTW += -lfftw3_omp
+LIB_FFTW += -lfftw3_threads
 endif #OMP
 ifeq ($(strip $(USE_MPI)),yes)
 LIB_FFTW += -lfftw3_mpi
@@ -79,7 +88,10 @@ endif #SINGLE_PRECISION
 OPTIONS += $(DEFINEFLAGS)
 
 INC_ALL = -I./src $(GSL_INC) $(FFTW_INC) $(HPIX_INC) $(FITS_INC) $(LSHT_INC)
-LIB_ALL = $(GSL_LIB) $(FFTW_LIB) $(HPIX_LIB) $(FITS_LIB) $(LSHT_LIB) -lgsl -lgslcblas $(LIB_FFTW) -lchealpix -lsharp -lfftpack -lc_utils -lcfitsio -lm
+LIB_ALL = $(GSL_LIB) $(FFTW_LIB) $(HPIX_LIB) $(FITS_LIB) $(LSHT_LIB) -lgsl -lgslcblas $(LIB_FFTW) -lchealpix -lcfitsio -lm 
+#-lc_utils 
+#-lsharp -lfftpack
+
 
 COMMONO = src/common.o src/healpix_extra.o
 
